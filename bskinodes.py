@@ -1,7 +1,6 @@
-from typing_extensions import override
 import logging
 
-from comfy_api.latest import ComfyExtension, io
+from comfy_api.latest import io
 
 
 class BskiNode(io.ComfyNode):
@@ -123,22 +122,4 @@ class BskiNode(io.ComfyNode):
 # async def get_hello(request):
 #     return web.json_response("hello")
 
-
-class BskiNodeExtension(ComfyExtension):
-    @override
-    async def get_node_list(self) -> list[type[io.ComfyNode]]:
-        return [BskiNode]
-
-
-async def comfy_entrypoint() -> BskiNodeExtension:  # ComfyUI calls this to load your extension and its nodes.
-    return BskiNodeExtension()
-
-
-NODE_CLASS_MAPPINGS = {
-    "BskiNode": BskiNode,
-}
-
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "BskiNode": "Bskis first node does cool stuff",
-}
 
