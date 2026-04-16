@@ -88,8 +88,8 @@ class BskiVideoSmooth(io.ComfyNode):
         # anchor_latent = anchor_latent * denoise
 
         source = images[:, :, :, :3]
-        noisy_images = source + denoise * (0.5 - source)
-        noisy_images[0] = images[0]
+        # noisy_images = source + denoise * (0.5 - source)
+        # noisy_images[0] = images[0]
         
         logging.info("source")
         logging.info("source")
@@ -102,15 +102,48 @@ class BskiVideoSmooth(io.ComfyNode):
         # logging.info("blended")
         # logging.info("blended")
         # logging.info(blended)
-        logging.info("noisy_image")
-        logging.info("noisy_image")
-        logging.info("noisy_image")
-        logging.info("noisy_image")
-        logging.info(noisy_images)
-        distance = torch.abs(source - 0.5)
-        anchor_latent = vae.encode(noisy_images)
+        # logging.info("noisy_image")
+        # logging.info("noisy_image")
+        # logging.info("noisy_image")
+        # logging.info("noisy_image")
+        # logging.info(noisy_images)
 
-        image_cond_latent = anchor_latent
+        # anchor_latent = vae.encode(noisy_images)
+        # image_cond_latent = anchor_latent
+
+        anchor_latent = vae.encode(source)
+        noise_prep_tensor = torch.randn_like(anchor_latent)
+        logging.info("noise_prep_tensor")
+        logging.info("noise_prep_tensor")
+        logging.info("noise_prep_tensor")
+        logging.info("noise_prep_tensor")
+        logging.info("noise_prep_tensor")
+        logging.info("noise_prep_tensor")
+        logging.info("noise_prep_tensor")
+        logging.info(noise_prep_tensor)
+
+        logging.info("anchor_latent BEFORE")
+        logging.info("anchor_latent BEFORE")
+        logging.info("anchor_latent BEFORE")
+        logging.info("anchor_latent BEFORE")
+        logging.info("anchor_latent BEFORE")
+        logging.info("anchor_latent BEFORE")
+        logging.info("anchor_latent BEFORE")
+        logging.info(anchor_latent)
+        # image_cond_latent = (1 - denoise) * anchor_latent + denoise * noise_prep_tensor
+        image_cond_latent = anchor_latent + denoise * 0.1 * torch.randn_like(anchor_latent)
+        image_cond_latent[:, :, 0] = anchor_latent[:, :, 0] # keep OG 1st image
+        # image_cond_latent = torch.lerp(anchor_latent, noise_prep_tensor, denoise)
+        # image_cond_latent = anchor_latent + torch.randn_like(anchor_latent) * (denoise * 0.05)
+
+        logging.info("anchor_latent AFTER")
+        logging.info("anchor_latent AFTER")
+        logging.info("anchor_latent AFTER")
+        logging.info("anchor_latent AFTER")
+        logging.info("anchor_latent AFTER")
+        logging.info("anchor_latent AFTER")
+        logging.info("anchor_latent AFTER")
+        logging.info(image_cond_latent)
         
         # 1 = big change, 0 = zero change
         logging.info("total_latents: " + str(total_latents))
