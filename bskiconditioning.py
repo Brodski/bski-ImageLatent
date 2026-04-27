@@ -66,12 +66,10 @@ class BskiVideoSmooth(io.ComfyNode):
         num_frames = images.shape[0]
         spacial_scale = vae.spacial_compression_encode()
         latent_channels = vae.latent_channels
-        latent_t = ((num_frames - 1) // 4) + 1
         total_latents = ((num_frames - 1) // 4) + 1
         H = height // spacial_scale
         W = width // spacial_scale
-        batch_size = 1
-        latent = torch.zeros([batch_size, latent_channels, latent_t, H, W], device=device)
+
 
         logging.info("denoise_mask" + str(denoise_mask))
         logging.info("denoise" + str(denoise))
@@ -88,8 +86,6 @@ class BskiVideoSmooth(io.ComfyNode):
         # anchor_latent = anchor_latent * denoise
 
         source = images[:, :, :, :3]
-        # noisy_images = source + denoise * (0.5 - source)
-        # noisy_images[0] = images[0]
         
         logging.info("source")
         logging.info("source")
@@ -97,57 +93,25 @@ class BskiVideoSmooth(io.ComfyNode):
         logging.info("source")
         logging.info("source")
         logging.info(source)
-        # logging.info("blended")
-        # logging.info("blended")
-        # logging.info("blended")
-        # logging.info("blended")
-        # logging.info(blended)
-        # logging.info("noisy_image")
-        # logging.info("noisy_image")
-        # logging.info("noisy_image")
-        # logging.info("noisy_image")
-        # logging.info(noisy_images)
-
-        # anchor_latent = vae.encode(noisy_images)
-        # image_cond_latent = anchor_latent
 
         anchor_latent = vae.encode(source)
-        noise_prep_tensor = torch.randn_like(anchor_latent)
-        logging.info("noise_prep_tensor")
-        logging.info("noise_prep_tensor")
-        logging.info("noise_prep_tensor")
-        logging.info("noise_prep_tensor")
-        logging.info("noise_prep_tensor")
-        logging.info("noise_prep_tensor")
-        logging.info("noise_prep_tensor")
-        logging.info(noise_prep_tensor)
 
-        logging.info("anchor_latent BEFORE")
-        logging.info("anchor_latent BEFORE")
-        logging.info("anchor_latent BEFORE")
-        logging.info("anchor_latent BEFORE")
-        logging.info("anchor_latent BEFORE")
-        logging.info("anchor_latent BEFORE")
-        logging.info("anchor_latent BEFORE")
-        logging.info(anchor_latent)
-        # image_cond_latent = (1 - denoise) * anchor_latent + denoise * noise_prep_tensor
-        image_cond_latent = anchor_latent + denoise * 0.1 * torch.randn_like(anchor_latent)
-        image_cond_latent[:, :, 0] = anchor_latent[:, :, 0] # keep OG 1st image
         # image_cond_latent = torch.lerp(anchor_latent, noise_prep_tensor, denoise)
         # image_cond_latent = anchor_latent + torch.randn_like(anchor_latent) * (denoise * 0.05)
+        # THIS IS WRONG!!!!!!!!!!!!!!!!!!
+        # THIS IS WRONG!!!!!!!!!!!!!!!!!!
+        # THIS IS WRONG!!!!!!!!!!!!!!!!!!
+        # THIS IS WRONG!!!!!!!!!!!!!!!!!!
+        # image_cond_latent = anchor_latent + denoise * 0.1 * torch.randn_like(anchor_latent)
+        image_cond_latent = anchor_latent # + denoise * 0.1 * torch.randn_like(anchor_latent)
+        image_cond_latent[:, :, 0] = anchor_latent[:, :, 0] # keep OG 1st image
 
-        logging.info("anchor_latent AFTER")
-        logging.info("anchor_latent AFTER")
-        logging.info("anchor_latent AFTER")
-        logging.info("anchor_latent AFTER")
-        logging.info("anchor_latent AFTER")
         logging.info("anchor_latent AFTER")
         logging.info("anchor_latent AFTER")
         logging.info(image_cond_latent)
         
         # 1 = big change, 0 = zero change
         logging.info("total_latents: " + str(total_latents))
-        logging.info("latent.shape[2]: " + str(latent.shape[2]))
         logging.info("--------------")
         logging.info("H: " + str(H))
         logging.info("image_cond_latent.shape[-2]: " + str(image_cond_latent.shape[-2]))
@@ -158,26 +122,11 @@ class BskiVideoSmooth(io.ComfyNode):
         mask_svi = torch.ones((1, 1, total_latents, H, W), device=device, dtype=anchor_latent.dtype) * denoise_mask  # !!!!!!!
         mask_svi[:, :, :1] = 0.0
 
-        mask_alt = torch.ones((1, 1, latent.shape[2], image_cond_latent.shape[-2], image_cond_latent.shape[-1]), device=images[0].device, dtype=images[0].dtype)
-        mask_alt[:, :, :((images[0].shape[0] - 1) // 4) + 1] = 0.0
         logging.info("mask_svi")
         logging.info("mask_svi")
         logging.info("mask_svi")
         logging.info("mask_svi")
         logging.info("mask_svi")
-        logging.info("mask_svi")
-        logging.info("mask_svi")
-        logging.info("mask_svi")
-        logging.info("mask_svi")
-        logging.info("mask_svi")
-        logging.info("mask_svi")
-        logging.info("mask_svi")
-        logging.info(mask_svi)
-        logging.info("mask_ALT")
-        logging.info("mask_ALT")
-        logging.info("mask_ALT")
-        logging.info("mask_ALT")
-        logging.info("mask_ALT")
         logging.info(mask_svi)
 
         # Attach encoded frames + mask to conditioning
@@ -191,6 +140,8 @@ class BskiVideoSmooth(io.ComfyNode):
             "concat_mask": mask_svi,
         })
 
+        batch_size = 1
+        latent = torch.zeros([batch_size, latent_channels, total_latents, H, W], device=device)
         out_latent = {"samples": latent}
 
         return io.NodeOutput(positive_out, negative_out, out_latent, num_frames)
