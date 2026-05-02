@@ -19,6 +19,7 @@ from .bskinodes import BskiImageListToImageBatch
 from .bskinodes import BskiRemove1stImageOfBatch
 from .bski_sam3 import BskiSAM3Segment
 from .bski_depth_measure import BskiDepthMeasure
+from .bski_lazy_sort import BskiLazySort
 
 NODE_CLASS_MAPPINGS = {
     "BskiAppendAnyToList": BskiAppendAnyToList,
@@ -29,7 +30,8 @@ NODE_CLASS_MAPPINGS = {
     "BskiImageListToImageBatch": BskiImageListToImageBatch,
     "BskiRemove1stImageOfBatch": BskiRemove1stImageOfBatch,
     "BskiSAM3Segment" : BskiSAM3Segment,
-    "BskiDepthMeasure": BskiDepthMeasure
+    "BskiDepthMeasure": BskiDepthMeasure,
+    "BskiLazySort": BskiLazySort
     # "MaskBatchSplitter //Inspire": MaskBatchSplitter,
 }
 
@@ -42,14 +44,15 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "BskiMaskGrowPlus": "Bski Grow Mask+",
     "BskiImageListToImageBatch": "Bski image list to image batch, i guess",
     "BskiRemove1stImageOfBatch": "Bski Remove 1st Entry",
-    "BskiSAM3Segment": "bski SAM3 Segment"
+    "BskiSAM3Segment": "bski SAM3 Segment",
+    "BskiLazySort": "Bski Lazy Sort"
 }
 
 
 class BskiExtension(ComfyExtension):
     @override
     async def get_node_list(self) -> list[type[io.ComfyNode]]:
-        return [BskiAppendAnyToList, BskiVideoSmooth, BskiFirstLast, Bski_KJBboxToComfyBBox, BskiMaskGrowPlus, BskiImageListToImageBatch, BskiRemove1stImageOfBatch, BskiSAM3Segment, BskiDepthMeasure]
+        return [BskiAppendAnyToList, BskiVideoSmooth, BskiFirstLast, Bski_KJBboxToComfyBBox, BskiMaskGrowPlus, BskiImageListToImageBatch, BskiRemove1stImageOfBatch, BskiSAM3Segment, BskiDepthMeasure, BskiLazySort]
 
 async def comfy_entrypoint() -> BskiExtension:
     return BskiExtension()

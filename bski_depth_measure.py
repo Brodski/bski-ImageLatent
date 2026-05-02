@@ -19,11 +19,11 @@ class BskiDepthMeasure(io.ComfyNode):
             inputs=[
                 io.Image.Input(
                     "imgs_depthmap",
-                    tooltip="Batch of depth-map images, one segmented object per image.",
+                    tooltip="Depth-map images, one segmented object per image.",
                 ),
                 io.Image.Input(
                     "images",
-                    tooltip="Original images (passthrough). Sorted into the same order as the depth maps.",
+                    tooltip="Original images. Sorted in same order as the depth maps.",
                     optional=True,
                 ),
                 io.Mask.Input(

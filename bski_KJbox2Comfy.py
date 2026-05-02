@@ -18,14 +18,6 @@ class Bski_KJBboxToComfyBBox(io.ComfyNode):
             ],
         )
 
-    # @classmethod
-    # def execute(cls, bboxes):
-    #     converted = [
-    #         {"x": x, "y": y, "width": w, "height": h}
-    #         for (x, y, w, h) in bboxes
-    #     ]
-    #     return (converted,)
-
 
     @classmethod
     def execute(cls, bboxes):
