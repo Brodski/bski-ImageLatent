@@ -28,6 +28,7 @@ class BskiLazySort(io.ComfyNode):
                     optional=True,
                     tooltip="Bounding boxes in original-image coords. Required to offset cropped-mask centroids into global space.",
                 ),
+                io.Boolean.Input("is_left_to_right", default=True, optional=True),
             ],
             outputs=[
                 io.Image.Output("images"),
@@ -37,7 +38,7 @@ class BskiLazySort(io.ComfyNode):
         )
 
     @classmethod
-    def execute(cls, images, masks=None, bboxes=None) -> io.NodeOutput:
+    def execute(cls, images, masks=None, bboxes=None, is_left_to_right=True) -> io.NodeOutput:
         n = images.shape[0]
 
         # Normalize bboxes: [[{...}, ...]] -> [{...}, ...]
@@ -57,7 +58,7 @@ class BskiLazySort(io.ComfyNode):
             for i in range(n)
         ]
 
-        order = sorted(range(n), key=lambda i: keys[i])
+        order = sorted(range(n), key=lambda i: keys[i], reverse=not is_left_to_right)
         idx = torch.tensor(order, dtype=torch.long)
 
         out_images = images[idx]

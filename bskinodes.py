@@ -90,6 +90,21 @@ class BskiAppendAnyToList(io.ComfyNode):
                 unique.append(candidate)
         return unique
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 class BskiRemove1stImageOfBatch(io.ComfyNode):
     @classmethod
     def define_schema(cls) -> io.Schema:
